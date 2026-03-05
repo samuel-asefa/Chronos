@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHRONOS — Timeline Challenge</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e2ddd6;
+    --text-primary: #1a1714;
+    --text-secondary: #7a746c;
+    --text-muted: #b0a89e;
+    --accent: #c4622d;
+    --accent-light: #f2e8e1;
+    --success: #2d6a4f;
+    --success-light: #d8f3dc;
+    --danger: #9b2335;
+    --danger-light: #fde8ec;
+    --warning: #b5850d;
+    --warning-light: #fef9e7;
+    --radius: 4px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 48px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    width: 100%;
+    max-width: 680px;
+    padding: 36px 0 28px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+  }
+  .logo span { color: var(--accent); }
+  .tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .score-bar {
+    margin-left: auto;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .stat {
+    text-align: right;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  /* ── SCREENS ── */
+  .screen { width: 100%; max-width: 680px; display: none; }
+  .screen.active { display: block; }
+
+  /* ── START SCREEN ── */
+  #start-screen { text-align: center; padding-top: 32px; }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 8vw, 72px);
+    line-height: 1.05;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 400px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 40px;
+    text-align: left;
+  }
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+  }
+  .rule-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .rule-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .categories {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 36px;
+  }
+  .cat-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.06em;
+  }
+  .cat-pill:hover, .cat-pill.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn-primary {
+    background: var(--text-primary);
+    color: var(--bg);
+    border: none;
+    padding: 14px 48px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ── GAME SCREEN ── */
+  #game-screen { }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .lives-display {
+    display: flex;
+    gap: 4px;
+  }
+  .life {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    transition: all 0.3s;
+  }
+  .life.lost { background: var(--border); }
+
+  /* Question card */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .q-category {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .q-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .q-timer-ring {
+    margin-left: auto;
+    position: relative;
+    width: 36px;
+    height: 36px;
+  }
+  .q-timer-ring svg { transform: rotate(-90deg); }
+  .timer-bg { fill: none; stroke: var(--border); stroke-width: 2.5; }
+  .timer-arc { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+  .timer-num {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+  .q-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Answers */
+  .answers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .ans-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.4;
+    box-shadow: var(--shadow);
+  }
+  .ans-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .ans-letter {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 14px;
+    margin-top: 1px;
+  }
+  .ans-btn.correct {
+    background: var(--success-light);
+    border-color: var(--success);
+    color: var(--success);
+  }
+  .ans-btn.wrong {
+    background: var(--danger-light);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  .ans-btn:disabled { cursor: default; }
+
+  /* Slider question */
+  .slider-wrap { padding: 8px 0 16px; }
+  .year-display {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  .range-input {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    margin-bottom: 8px;
+  }
+  .range-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: 0 0 0 1px var(--accent);
+    transition: transform 0.1s;
+  }
+  .range-input::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  .btn-submit {
+    width: 100%;
+    background: var(--text-primary);
+    color: var(--bg);
+    border: none;
+    padding: 13px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-submit:hover { background: var(--accent); }
+
+  /* Feedback */
+  .feedback-bar {
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    display: none;
+    animation: slideIn 0.25s ease;
+    border: 1px solid;
+  }
+  .feedback-bar.show { display: flex; align-items: flex-start; gap: 12px; }
+  .feedback-bar.correct-fb { background: var(--success-light); border-color: var(--success); color: var(--success); }
+  .feedback-bar.wrong-fb { background: var(--danger-light); border-color: var(--danger); color: var(--danger); }
+  .feedback-bar.partial-fb { background: var(--warning-light); border-color: var(--warning); color: var(--warning); }
+  .fb-icon { font-size: 16px; margin-top: 1px; }
+  .fb-main { font-weight: 500; font-size: 14px; margin-bottom: 3px; }
+  .fb-detail { font-size: 12px; opacity: 0.8; line-height: 1.5; }
+
+  .next-btn-row { text-align: right; }
+  .btn-next {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 10px 28px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .btn-next:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── RESULTS SCREEN ── */
+  #result-screen { text-align: center; padding-top: 24px; }
+  .result-grade {
+    font-family: 'Playfair Display', serif;
+    font-size: 96px;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .result-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+  .rs-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .rs-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .rs-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .review-list {
+    text-align: left;
+    margin-bottom: 32px;
+  }
+  .review-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+  }
+  .review-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .review-dot.c { background: var(--success); }
+  .review-dot.w { background: var(--danger); }
+  .review-dot.p { background: var(--warning); }
+  .review-q { flex: 1; color: var(--text-secondary); }
+  .review-pts {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .result-actions { display: flex; gap: 10px; justify-content: center; }
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 12px 32px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* streak badge */
+  .streak-badge {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .streak-badge.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">CHRON<span>O</span>S</div>
+    <div class="tagline">Timeline Challenge</div>
+  </div>
+  <div class="score-bar" id="score-bar" style="display:none">
+    <div class="stat">
+      <span class="stat-label">Score</span>
+      <span class="stat-value" id="hdr-score">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-label">Streak</span>
+      <span class="stat-value" id="hdr-streak">0</span>
+    </div>
+  </div>
+</header>
+
+<!-- START -->
+<div class="screen active" id="start-screen">
+  <div class="hero-title">Test your<br><em>place in time.</em></div>
+  <p class="hero-sub">Guess years, sequence events, and place moments on the timeline. History meets trivia — no dates to memorize, just your intuition.</p>
+
+  <div class="rules-grid">
+    <div class="rule-card">
+      <div class="rule-num">01 — Multiple Choice</div>
+      <div class="rule-text">4 possible answers. Pick the right year or event. Fast answers earn bonus points.</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">02 — Year Slider</div>
+      <div class="rule-text">Drag the slider to the year you think an event occurred. Points scale with accuracy.</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">03 — Streak Bonus</div>
+      <div class="rule-text">Consecutive correct answers multiply your score. A streak of 3 = double points.</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">04 — Three Lives</div>
+      <div class="rule-text">You have 3 chances. Wrong answers and timeouts cost a life. Lose all three and it's over.</div>
+    </div>
+  </div>
+
+  <div class="categories" id="cat-chooser">
+    <div class="cat-pill selected" data-cat="all">All Topics</div>
+    <div class="cat-pill" data-cat="science">Science</div>
+    <div class="cat-pill" data-cat="history">History</div>
+    <div class="cat-pill" data-cat="tech">Technology</div>
+    <div class="cat-pill" data-cat="culture">Culture</div>
+    <div class="cat-pill" data-cat="space">Space</div>
+  </div>
+
+  <button class="btn-primary" id="start-btn">Begin Challenge →</button>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="game-screen">
+  <div class="progress-row">
+    <div class="lives-display" id="lives-display"></div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="progress-label" id="prog-label">1 / 10</div>
+  </div>
+
+  <div class="q-card" id="q-card">
+    <div class="q-meta">
+      <span class="q-category" id="q-cat">Science</span>
+      <span class="q-type" id="q-type">Multiple Choice</span>
+      <div class="q-timer-ring" id="timer-ring">
+        <svg width="36" height="36" viewBox="0 0 36 36">
+          <circle class="timer-bg" cx="18" cy="18" r="15"/>
+          <circle class="timer-arc" id="timer-arc" cx="18" cy="18" r="15"
+            stroke-dasharray="94.25" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-num" id="timer-num">20</div>
+      </div>
+    </div>
+    <div class="q-text" id="q-text">Loading…</div>
+    <div class="q-hint" id="q-hint"></div>
+  </div>
+
+  <div id="mc-wrap">
+    <div class="answers-grid" id="answers-grid"></div>
+  </div>
+
+  <div id="slider-wrap" style="display:none">
+    <div class="slider-wrap">
+      <div class="year-display" id="year-display">1950</div>
+      <input type="range" class="range-input" id="year-slider" min="1800" max="2023" value="1950">
+      <div class="range-labels"><span id="range-min">1800</span><span id="range-max">2023</span></div>
+      <button class="btn-submit" id="slider-submit">Lock In Answer →</button>
+    </div>
+  </div>
+
+  <div class="feedback-bar" id="feedback-bar">
+    <div class="fb-icon" id="fb-icon">✓</div>
+    <div>
+      <div class="fb-main" id="fb-main"></div>
+      <div class="fb-detail" id="fb-detail"></div>
+    </div>
+  </div>
+
+  <div class="next-btn-row" id="next-row" style="display:none">
+    <button class="btn-next" id="next-btn">Next Question →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="result-screen">
+  <div class="result-grade" id="res-grade">A</div>
+  <div class="result-label" id="res-label">Excellent</div>
+  <div class="result-stats">
+    <div class="rs-card"><div class="rs-val" id="res-score">0</div><div class="rs-lbl">Final Score</div></div>
+    <div class="rs-card"><div class="rs-val" id="res-correct">0/10</div><div class="rs-lbl">Correct</div></div>
+    <div class="rs-card"><div class="rs-val" id="res-best-streak">0</div><div class="rs-lbl">Best Streak</div></div>
+  </div>
+  <div class="review-list">
+    <div class="review-title">Question Review</div>
+    <div id="review-items"></div>
+  </div>
+  <div class="result-actions">
+    <button class="btn-secondary" id="play-again-btn">Play Again</button>
+    <button class="btn-primary" id="new-cat-btn">Change Category</button>
+  </div>
+</div>
+
+<div class="streak-badge" id="streak-badge">🔥 Streak ×3</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  QUESTION BANK
+// ═══════════════════════════════════════════════
+const ALL_QUESTIONS = [
+  // SCIENCE
+  {cat:'science', type:'mc', text:'In which year did Alexander Fleming discover penicillin?', hint:'He noticed mold killing bacteria on a petri dish.',
+   opts:['1918','1922','1928','1935'], answer:2, explanation:'Fleming discovered penicillin in 1928 when mold contaminated his culture plates.'},
+  {cat:'science', type:'mc', text:'When did Marie Curie win her first Nobel Prize (in Physics)?', hint:'She was the first woman to win a Nobel Prize.',
+   opts:['1896','1903','1911','1921'], answer:1, explanation:'Curie won the 1903 Nobel Prize in Physics, sharing it with her husband Pierre and Henri Becquerel.'},
+  {cat:'science', type:'slider', text:'Drag to the year DNA\'s double helix structure was published by Watson & Crick.', hint:'A landmark moment in molecular biology.', sliderRange:[1940,1970], answer:1953, explanation:'Watson and Crick published their model of DNA in Nature in April 1953.'},
+  {cat:'science', type:'mc', text:'The theory of general relativity was published by Einstein in what year?', hint:'It was during World War I.',
+   opts:['1905','1912','1915','1919'], answer:2, explanation:'Einstein published his theory of general relativity in 1915, though key tests came in 1919.'},
+  {cat:'science', type:'slider', text:'Drag to the year the first successful human heart transplant was performed.', hint:'It happened in South Africa.', sliderRange:[1955,1985], answer:1967, explanation:'Dr. Christiaan Barnard performed the first human heart transplant in Cape Town, South Africa in 1967.'},
+
+  // HISTORY
+  {cat:'history', type:'mc', text:'In which year did the Berlin Wall fall?', hint:'The Cold War was ending across Eastern Europe.',
+   opts:['1987','1988','1989','1991'], answer:2, explanation:'The Berlin Wall fell on November 9, 1989, as communist East Germany opened its borders.'},
+  {cat:'history', type:'slider', text:'Drag to the year the Magna Carta was signed.', hint:'It limited the power of the English king.', sliderRange:[1100,1300], answer:1215, explanation:'King John of England signed the Magna Carta at Runnymede on June 15, 1215.'},
+  {cat:'history', type:'mc', text:'The French Revolution began in which year?', hint:'The storming of the Bastille was the famous flashpoint.',
+   opts:['1785','1789','1793','1799'], answer:1, explanation:'The French Revolution is generally dated from 1789 when the Estates-General convened and the Bastille was stormed.'},
+  {cat:'history', type:'mc', text:'In which year did World War I end?', hint:'The armistice was signed on the 11th hour of the 11th day of the 11th month.',
+   opts:['1916','1917','1918','1919'], answer:2, explanation:'WWI ended on November 11, 1918 with the signing of the Armistice.'},
+  {cat:'history', type:'slider', text:'Drag to the year Julius Caesar was assassinated.', hint:'It happened on the Ides of March.', sliderRange:[-100,0], answer:-44, explanation:'Julius Caesar was assassinated on March 15, 44 BC (displayed as -44).'},
+
+  // TECHNOLOGY
+  {cat:'tech', type:'mc', text:'When was the first iPhone released by Apple?', hint:'Steve Jobs called it "a revolutionary product."',
+   opts:['2005','2006','2007','2008'], answer:2, explanation:'Apple released the first iPhone on June 29, 2007. Steve Jobs had unveiled it in January that year.'},
+  {cat:'tech', type:'mc', text:'In which year was the World Wide Web invented by Tim Berners-Lee?', hint:'He was working at CERN in Switzerland.',
+   opts:['1983','1989','1991','1995'], answer:1, explanation:'Tim Berners-Lee invented the World Wide Web in 1989 and published the first web page in 1991.'},
+  {cat:'tech', type:'slider', text:'Drag to the year the first commercial email service launched (ARPANET email).', hint:'It predates the public internet significantly.', sliderRange:[1965,1990], answer:1971, explanation:'Ray Tomlinson sent the first network email in 1971, establishing the @ convention still used today.'},
+  {cat:'tech', type:'mc', text:'ChatGPT was launched publicly in which month and year?', hint:'It rapidly became one of the fastest-growing apps in history.',
+   opts:['March 2022','November 2022','March 2023','November 2023'], answer:1, explanation:'ChatGPT was launched publicly on November 30, 2022 and reached 1 million users within 5 days.'},
+  {cat:'tech', type:'slider', text:'Drag to the year Netflix was founded (originally as a DVD rental service).', hint:'It predates streaming by over a decade.', sliderRange:[1990,2010], answer:1997, explanation:'Netflix was founded in 1997 by Reed Hastings and Marc Randolph as a DVD mail rental service.'},
+
+  // CULTURE
+  {cat:'culture', type:'mc', text:'In which year did The Beatles release "Abbey Road"?', hint:'It was the last album they recorded together.',
+   opts:['1967','1968','1969','1970'], answer:2, explanation:'Abbey Road was released on September 26, 1969. It was the last album recorded by all four Beatles together.'},
+  {cat:'culture', type:'slider', text:'Drag to the year the first modern Olympic Games were held.', hint:'They were held in Athens, Greece.', sliderRange:[1880,1920], answer:1896, explanation:'The first modern Olympic Games were held in Athens, Greece in April 1896, revived by Pierre de Coubertin.'},
+  {cat:'culture', type:'mc', text:'Shakespeare\'s "Romeo and Juliet" was written approximately when?', hint:'It was during the Elizabethan era.',
+   opts:['1560–1565','1574–1578','1594–1596','1600–1604'], answer:2, explanation:'Romeo and Juliet is believed to have been written between 1594 and 1596, early in Shakespeare\'s career.'},
+  {cat:'culture', type:'mc', text:'In which year was the Eiffel Tower completed?', hint:'It was built for a World\'s Fair in Paris.',
+   opts:['1885','1887','1889','1893'], answer:2, explanation:'The Eiffel Tower was completed on March 31, 1889 for the 1889 World\'s Fair celebrating 100 years of the French Revolution.'},
+  {cat:'culture', type:'slider', text:'Drag to the year Picasso painted Guernica.', hint:'It depicted the bombing of a Basque town during the Spanish Civil War.', sliderRange:[1920,1960], answer:1937, explanation:'Picasso painted Guernica in 1937 as a protest against the bombing of the Basque town of Guernica.'},
+
+  // SPACE
+  {cat:'space', type:'mc', text:'In which year did humans first land on the Moon?', hint:'Neil Armstrong was the first to step on the lunar surface.',
+   opts:['1966','1968','1969','1972'], answer:2, explanation:'Apollo 11 landed on the Moon on July 20, 1969. Neil Armstrong took his first step about 6 hours later.'},
+  {cat:'space', type:'slider', text:'Drag to the year the Hubble Space Telescope was launched.', hint:'It has given us some of the deepest views of the universe.', sliderRange:[1980,2005], answer:1990, explanation:'The Hubble Space Telescope was launched on April 24, 1990 aboard the Space Shuttle Discovery.'},
+  {cat:'space', type:'mc', text:'Sputnik, the first artificial satellite, was launched in what year?', hint:'It triggered the Space Race between the US and USSR.',
+   opts:['1955','1956','1957','1958'], answer:2, explanation:'The Soviet Union launched Sputnik 1 on October 4, 1957, beginning the Space Age.'},
+  {cat:'space', type:'slider', text:'Drag to the year Mars Curiosity rover landed on Mars.', hint:'It used the "sky crane" landing system.', sliderRange:[2000,2020], answer:2012, explanation:'Curiosity landed in Gale Crater on Mars on August 6, 2012, using the revolutionary sky crane system.'},
+  {cat:'space', type:'mc', text:'The James Webb Space Telescope launched in which year?', hint:'It is the successor to Hubble, orbiting 1.5 million km from Earth.',
+   opts:['2019','2020','2021','2022'], answer:2, explanation:'JWST launched on December 25, 2021 aboard an Ariane 5 rocket. First science images were released in July 2022.'},
+];
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let state = {
+  questions: [],
+  currentIdx: 0,
+  score: 0,
+  streak: 0,
+  bestStreak: 0,
+  lives: 3,
+  selectedCat: 'all',
+  timerInterval: null,
+  timeLeft: 20,
+  answered: false,
+  results: [],
+};
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function getQuestions(cat) {
+  const pool = cat === 'all' ? ALL_QUESTIONS : ALL_QUESTIONS.filter(q => q.cat === cat);
+  return shuffle(pool).slice(0, 10);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function updateHeader() {
+  document.getElementById('hdr-score').textContent = state.score;
+  document.getElementById('hdr-streak').textContent = state.streak;
+}
+
+function renderLives() {
+  const el = document.getElementById('lives-display');
+  el.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const d = document.createElement('div');
+    d.className = 'life' + (i >= state.lives ? ' lost' : '');
+    el.appendChild(d);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════════
+function startTimer(seconds, onTimeout) {
+  clearInterval(state.timerInterval);
+  state.timeLeft = seconds;
+  const arc = document.getElementById('timer-arc');
+  const num = document.getElementById('timer-num');
+  const circumference = 94.25;
+
+  function tick() {
+    num.textContent = state.timeLeft;
+    const offset = circumference * (1 - state.timeLeft / seconds);
+    arc.style.strokeDashoffset = offset;
+    const pct = state.timeLeft / seconds;
+    arc.style.stroke = pct > 0.5 ? 'var(--accent)' : pct > 0.25 ? 'var(--warning)' : 'var(--danger)';
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      onTimeout();
+    }
+    state.timeLeft--;
+  }
+  tick();
+  state.timerInterval = setInterval(tick, 1000);
+}
+
+function stopTimer() { clearInterval(state.timerInterval); }
+
+// ═══════════════════════════════════════════════
+//  RENDER QUESTION
+// ═══════════════════════════════════════════════
+function renderQuestion() {
+  const q = state.questions[state.currentIdx];
+  state.answered = false;
+
+  // Meta
+  document.getElementById('q-cat').textContent = q.cat.charAt(0).toUpperCase() + q.cat.slice(1);
+  document.getElementById('q-type').textContent = q.type === 'mc' ? 'Multiple Choice' : 'Year Slider';
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-hint').textContent = q.hint || '';
+
+  // Progress
+  document.getElementById('prog-fill').style.width = ((state.currentIdx / state.questions.length) * 100) + '%';
+  document.getElementById('prog-label').textContent = `${state.currentIdx + 1} / ${state.questions.length}`;
+
+  // Feedback hidden
+  const fb = document.getElementById('feedback-bar');
+  fb.className = 'feedback-bar';
+  document.getElementById('next-row').style.display = 'none';
+
+  renderLives();
+
+  if (q.type === 'mc') {
+    document.getElementById('mc-wrap').style.display = 'block';
+    document.getElementById('slider-wrap').style.display = 'none';
+    renderMC(q);
+  } else {
+    document.getElementById('mc-wrap').style.display = 'none';
+    document.getElementById('slider-wrap').style.display = 'block';
+    renderSlider(q);
+  }
+
+  startTimer(20, () => onTimeout(q));
+}
+
+function renderMC(q) {
+  const grid = document.getElementById('answers-grid');
+  grid.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'ans-btn';
+    btn.innerHTML = `<span class="ans-letter">${letters[i]}</span>${opt}`;
+    btn.addEventListener('click', () => onMCAnswer(i, q));
+    grid.appendChild(btn);
+  });
+}
+
+function renderSlider(q) {
+  const [min, max] = q.sliderRange;
+  const slider = document.getElementById('year-slider');
+  const display = document.getElementById('year-display');
+  slider.min = min; slider.max = max;
+  const mid = Math.round((min + max) / 2);
+  slider.value = mid;
+  display.textContent = mid < 0 ? `${Math.abs(mid)} BC` : mid;
+  document.getElementById('range-min').textContent = min < 0 ? `${Math.abs(min)} BC` : min;
+  document.getElementById('range-max').textContent = max;
+  slider.oninput = () => {
+    const v = parseInt(slider.value);
+    display.textContent = v < 0 ? `${Math.abs(v)} BC` : v;
+  };
+  document.getElementById('slider-submit').onclick = () => onSliderAnswer(q);
+}
+
+// ═══════════════════════════════════════════════
+//  ANSWER HANDLERS
+// ═══════════════════════════════════════════════
+function onMCAnswer(chosen, q) {
+  if (state.answered) return;
+  state.answered = true;
+  stopTimer();
+
+  const btns = document.querySelectorAll('.ans-btn');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.answer) b.classList.add('correct');
+    else if (i === chosen && chosen !== q.answer) b.classList.add('wrong');
+  });
+
+  const isCorrect = chosen === q.answer;
+  const timeBonus = Math.max(0, state.timeLeft * 5);
+  processResult(isCorrect, isCorrect, q, isCorrect ? (100 + timeBonus) : 0, q.opts[q.answer]);
+}
+
+function onSliderAnswer(q) {
+  if (state.answered) return;
+  state.answered = true;
+  stopTimer();
+  document.getElementById('slider-submit').disabled = true;
+
+  const guess = parseInt(document.getElementById('year-slider').value);
+  const actual = q.answer;
+  const diff = Math.abs(guess - actual);
+  let pts = 0, grade = '';
+  if (diff === 0) { pts = 200; grade = 'perfect'; }
+  else if (diff <= 2) { pts = 150; grade = 'excellent'; }
+  else if (diff <= 5) { pts = 100; grade = 'great'; }
+  else if (diff <= 10) { pts = 60; grade = 'good'; }
+  else if (diff <= 20) { pts = 30; grade = 'close'; }
+  else { pts = 0; grade = 'miss'; }
+
+  const isCorrect = diff <= 5;
+  const isPartial = diff > 5 && diff <= 20;
+  processResult(isCorrect, !isCorrect && !isPartial ? false : true, q, pts,
+    actual < 0 ? `${Math.abs(actual)} BC` : actual,
+    diff, grade, isPartial);
+}
+
+function onTimeout(q) {
+  if (state.answered) return;
+  state.answered = true;
+  // disable all
+  document.querySelectorAll('.ans-btn').forEach(b => { b.disabled = true; });
+  document.getElementById('slider-submit').disabled = true;
+  if (q.type === 'mc') {
+    document.querySelectorAll('.ans-btn')[q.answer].classList.add('correct');
+  }
+  processResult(false, false, q, 0, q.type === 'mc' ? q.opts[q.answer] : q.answer, null, null, false, true);
+}
+
+function processResult(isCorrect, isPartial, q, pts, correctAnswer, diff, grade, partial=false, timeout=false) {
+  const fb = document.getElementById('feedback-bar');
+
+  if (isCorrect && !partial) {
+    state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    const multiplier = Math.min(state.streak, 3);
+    pts = pts * multiplier;
+    state.score += pts;
+    fb.className = 'feedback-bar correct-fb show';
+    document.getElementById('fb-icon').textContent = '✓';
+    document.getElementById('fb-main').textContent = state.streak >= 3 ? `Correct! ×${multiplier} Streak Bonus!` : 'Correct!';
+    document.getElementById('fb-detail').textContent = `+${pts} pts${diff !== undefined ? ` — Off by ${diff} year${diff!==1?'s':''}` : ''} · ${q.explanation}`;
+    if (state.streak >= 3) showStreakBadge(state.streak);
+  } else if (partial) {
+    state.streak = 0;
+    state.score += pts;
+    fb.className = 'feedback-bar partial-fb show';
+    document.getElementById('fb-icon').textContent = '~';
+    document.getElementById('fb-main').textContent = `Close! Off by ${diff} years`;
+    document.getElementById('fb-detail').textContent = `+${pts} pts · Correct answer: ${correctAnswer} · ${q.explanation}`;
+    state.lives--;
+  } else {
+    state.streak = 0;
+    state.lives--;
+    fb.className = 'feedback-bar wrong-fb show';
+    document.getElementById('fb-icon').textContent = timeout ? '⏱' : '✗';
+    document.getElementById('fb-main').textContent = timeout ? 'Time\'s Up!' : 'Incorrect';
+    document.getElementById('fb-detail').textContent = `Correct answer: ${correctAnswer} · ${q.explanation}`;
+  }
+
+  state.results.push({ q, isCorrect: isCorrect && !partial, partial, pts, timeout });
+  updateHeader();
+  renderLives();
+
+  document.getElementById('next-row').style.display = 'block';
+  if (state.lives <= 0) {
+    document.getElementById('next-btn').textContent = 'See Results →';
+  } else if (state.currentIdx + 1 >= state.questions.length) {
+    document.getElementById('next-btn').textContent = 'See Results →';
+  }
+}
+
+function showStreakBadge(n) {
+  const badge = document.getElementById('streak-badge');
+  badge.textContent = `🔥 Streak ×${Math.min(n,3)}`;
+  badge.classList.add('show');
+  setTimeout(() => badge.classList.remove('show'), 2000);
+}
+
+// ═══════════════════════════════════════════════
+//  NEXT / END
+// ═══════════════════════════════════════════════
+document.getElementById('next-btn').addEventListener('click', () => {
+  if (state.lives <= 0 || state.currentIdx + 1 >= state.questions.length) {
+    showResults();
+  } else {
+    state.currentIdx++;
+    renderQuestion();
+  }
+});
+
+// ═══════════════════════════════════════════════
+//  RESULTS
+// ═══════════════════════════════════════════════
+function showResults() {
+  stopTimer();
+  showScreen('result-screen');
+  document.getElementById('score-bar').style.display = 'none';
+
+  const correct = state.results.filter(r => r.isCorrect).length;
+  const total = state.results.length;
+  const pct = correct / total;
+
+  let grade, label;
+  if (pct >= 0.9) { grade = 'A+'; label = 'Exceptional'; }
+  else if (pct >= 0.8) { grade = 'A'; label = 'Excellent'; }
+  else if (pct >= 0.7) { grade = 'B'; label = 'Great Work'; }
+  else if (pct >= 0.6) { grade = 'C'; label = 'Good Effort'; }
+  else if (pct >= 0.4) { grade = 'D'; label = 'Keep Studying'; }
+  else { grade = 'F'; label = 'Better Luck Next Time'; }
+
+  document.getElementById('res-grade').textContent = grade;
+  document.getElementById('res-label').textContent = label;
+  document.getElementById('res-score').textContent = state.score;
+  document.getElementById('res-correct').textContent = `${correct}/${total}`;
+  document.getElementById('res-best-streak').textContent = state.bestStreak;
+
+  const ri = document.getElementById('review-items');
+  ri.innerHTML = '';
+  state.results.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'review-item';
+    const dotClass = r.isCorrect ? 'c' : r.partial ? 'p' : 'w';
+    el.innerHTML = `<div class="review-dot ${dotClass}"></div><div class="review-q">${r.q.text.substring(0,70)}…</div><div class="review-pts">+${r.pts}</div>`;
+    ri.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  START / RESET
+// ═══════════════════════════════════════════════
+function startGame() {
+  state = { questions: getQuestions(state.selectedCat), currentIdx:0, score:0, streak:0, bestStreak:0, lives:3, selectedCat:state.selectedCat, timerInterval:null, timeLeft:20, answered:false, results:[] };
+  document.getElementById('score-bar').style.display = 'flex';
+  updateHeader();
+  showScreen('game-screen');
+  renderQuestion();
+}
+
+document.getElementById('start-btn').addEventListener('click', startGame);
+document.getElementById('play-again-btn').addEventListener('click', () => { startGame(); });
+document.getElementById('new-cat-btn').addEventListener('click', () => { stopTimer(); showScreen('start-screen'); document.getElementById('score-bar').style.display='none'; });
+
+// Category selection
+document.getElementById('cat-chooser').addEventListener('click', e => {
+  const pill = e.target.closest('.cat-pill');
+  if (!pill) return;
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('selected'));
+  pill.classList.add('selected');
+  state.selectedCat = pill.dataset.cat;
+});
+</script>
+</body>
+</html>
